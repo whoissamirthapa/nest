@@ -61,26 +61,28 @@ export class AuthService{
                 first_name: res.first_name, 
                 last_name: res.last_name, 
                 display_name: res.display_name, 
+                roles: res.roles,
                 _id: res._id, 
             });
 
-            return {
+            return resMessage({
                 token,
                 data: {
                     email: res.email, 
                     first_name: res.first_name, 
                     last_name: res.last_name, 
                     display_name: res.display_name, 
+                    roles: res.roles,
                     _id: res._id, 
                 }
-            }
+            }, "Succefully loggedin!")
         });
     }
 
     async getUsers (){
         return resFunction(async()=>{
             const res = await this.authModel.find();
-            return res;
+            return resMessage(res, "Successfully found users");
         });
     }
     

@@ -14,6 +14,7 @@ import { JwtModule } from "@nestjs/jwt";
             secret: 'fagalsiefasldfkansodifansoif',
             signOptions: { expiresIn: '10d' },
           }),
+          
         MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema}])],
     controllers: [AuthController],
     providers:[

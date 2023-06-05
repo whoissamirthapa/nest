@@ -22,6 +22,9 @@ export class Auth{
 
     @Prop({required: true})
     image_url: string
+
+    @Prop({required: true, default: ["User"]})
+    roles: string[]
 }
 
 export const AuthSchema = SchemaFactory.createForClass(Auth);

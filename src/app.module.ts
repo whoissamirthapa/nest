@@ -6,6 +6,7 @@ import { TodoModule } from './crud/todo.module';
 import { DatabaseModule } from './config/dbconfig';
 import { ContactMessage } from './contact/contact.module';
 import { AuthModule } from './auth/auth.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { AuthModule } from './auth/auth.module';
     TodoModuleWithoutCQRS, 
     DatabaseModule, 
     ContactMessage, 
-    AuthModule
+    AuthModule,
+    PassportModule.register({ defaultStrategy: 'jwt' })
   ],
   controllers: [AppController],
   providers: [AppService],

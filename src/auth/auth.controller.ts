@@ -4,6 +4,7 @@ import { authTypeReq } from "enum/auth";
 import { AddAuthCommand, LoginAuthCommand } from "./commands/add-command";
 import { AuthGuard } from "@nestjs/passport";
 import { GetUsersQuery } from "./queries/getusers-query";
+import { Roles, RolesGuard } from "./middleware/roles.guard";
 
 
 
@@ -25,6 +26,8 @@ export class AuthController{
     }
 
     @Get()
+    @Roles("Admin", "User")
+    @UseGuards(RolesGuard)
     async getUsers(){
         return this.queryBus.execute(new GetUsersQuery())
     }
