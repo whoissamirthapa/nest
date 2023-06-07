@@ -85,5 +85,49 @@ export class AuthService{
             return resMessage(res, "Successfully found users");
         });
     }
+
+    async getProfile(id: string){
+        return resFunction(async()=>{
+            const res = await this.authModel.findById(id);
+            return resMessage(res, "Successfully found user");
+        })
+    }
+
+    async updateProfile(id: string, path:string, data: {
+        first_name: string,
+        last_name: string,
+        email: string,
+        roles: string[]
+    }){
+        return resFunction(async()=>{
+            const res = await this.authModel.findOneAndUpdate({
+                _id: id,
+            }, {
+                first_name: data.first_name,
+                last_name: data.last_name,
+                roles: data.roles,
+                email: data.email,
+                display_name: data.first_name+" "+data.last_name,
+                image_url: path
+            }, {
+                new: true
+            })
+
+            return resMessage(res, "Successfully updated")
+        })
+    }
     
 }
+
+
+
+// {
+//     fieldname: 'file',
+//     originalname: 'Screenshot 2023-05-30 172539.png',
+//     encoding: '7bit',
+//     mimetype: 'image/png',
+//     destination: './public/image',
+//     filename: 'fed861a8-6d10-4cce-b3ed-830d862b0954.png',
+//     path: 'public\\image\\fed861a8-6d10-4cce-b3ed-830d862b0954.png',       
+//     size: 120217
+//   }

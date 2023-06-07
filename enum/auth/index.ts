@@ -17,3 +17,8 @@ export type loginAuth = {
     email: string,
     password: string,
 }
+
+export interface ValidatorFn {
+    validate(file: Express.Multer.File): Promise<boolean>;
+    errorMessage: string;
+}

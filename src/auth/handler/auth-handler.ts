@@ -1,7 +1,8 @@
 import { CommandHandler, ICommandHandler, IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { AddAuthCommand, LoginAuthCommand } from "../commands/add-command";
 import { AuthService } from "../auth.service";
-import { GetUsersQuery } from "../queries/getusers-query";
+import { GetProfileQuery, GetUsersQuery } from "../queries/getusers-query";
+import { UpdateUserCommand } from "../commands/update-profile.command";
 
 
 
@@ -32,5 +33,26 @@ export class GetAuthHandler implements IQueryHandler<GetUsersQuery>{
     ){}
     async execute(command: GetUsersQuery): Promise<any> {
         return this.authService.getUsers();
+    }
+}
+
+@QueryHandler(GetProfileQuery)
+export class GetProfileHandler implements IQueryHandler<GetProfileQuery>{
+    constructor(
+        private readonly authService: AuthService
+    ){}
+    async execute(command: GetProfileQuery): Promise<any> {
+        return this.authService.getProfile(command?.id)
+    }
+}
+
+
+@CommandHandler(UpdateUserCommand)
+export class UpdateAuthHandler implements ICommandHandler<UpdateUserCommand>{
+    constructor(
+        private readonly authService: AuthService
+    ){}
+    async execute(command: UpdateUserCommand): Promise<any> {
+        return this.authService.updateProfile(command?.id, command?.path, command?.data)
     }
 }
