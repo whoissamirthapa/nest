@@ -1,5 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import { unlinkSync } from "fs";
+import { resErrMessage } from "src/utils/response";
+import { resFunction } from "src/utils/response";
 import { v4 as uuidv4 } from 'uuid';
 
 export class Cloudinary {
@@ -13,41 +15,48 @@ export class Cloudinary {
   
   uploadImage = async (imageToUpload: string): Promise<any> => {
   
-    try {
-        let uniqueSuffix = uuidv4();
-        const cloudinaryImageUploadResponseData = await cloudinary.uploader.upload(
-          imageToUpload,
-          {
-            public_id: uniqueSuffix as any,
-          }
-        );
-        const { url } = cloudinaryImageUploadResponseData;
-  
-        if (!url) {
-          unlinkSync(imageToUpload);
-          return {
-            isSuccess: false,
-            message:
-              "Couldn't upload your image at the moment. Please try again later.",
-            statusCode: 400,
-          };
+    return resFunction(async()=>{
+      let uniqueSuffix = uuidv4();
+      const cloudinaryImageUploadResponseData = await cloudinary.uploader.upload(
+        imageToUpload,
+        {
+          public_id: uniqueSuffix as any,
         }
-  
+      );
+      const { url } = cloudinaryImageUploadResponseData;
+
+      if (!url) {
         unlinkSync(imageToUpload);
-        return {
-          isSuccess: true,
-          message: "Successfully uploaded image.",
-          statusCode: 200,
-          imageURL: url,
-        };
-      } catch (error) {
-        unlinkSync(imageToUpload);
-        return {
-          isSuccess: false,
-          message: "Internal Server Error",
-          statusCode: 500,
-        };
+        throw resErrMessage("Couldn't upload your image at the moment. Please try again later.")
       }
+
+      unlinkSync(imageToUpload);
+      return {
+        isSuccess: true,
+        message: "Successfully uploaded image.",
+        statusCode: 200,
+        imageURL: url,
+      };
+    })
+  }
+
+  deleteImage = async(name: string): Promise<any>=>{
+    return resFunction(async()=>{
+      const public_id = name.substring(name.lastIndexOf('/') + 1, name.lastIndexOf('.'))
+      const { result } = await cloudinary.uploader.destroy(public_id);
+      if(result === "ok"){
+        return {
+          success: true,
+          statusCode: 200,
+          message: "Succefully deleted"
+        }
+      }
+      return {
+        success: false,
+        statusCode: 500,
+        message: "Error in deleting image"
+      }
+    })
   }
 }
 

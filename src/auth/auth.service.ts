@@ -6,6 +6,7 @@ import { authTypeReq, loginAuth } from 'enum/auth';
 import { resFunction, resMessage } from 'src/utils/response';
 import * as bycript from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt'
+import { cloudinaryInstance } from './middleware/cloudinary';
 
 
 @Injectable()
@@ -62,6 +63,7 @@ export class AuthService{
                 last_name: res.last_name, 
                 display_name: res.display_name, 
                 roles: res.roles,
+                image_url: res.image_url,
                 _id: res._id, 
             });
 
@@ -73,6 +75,7 @@ export class AuthService{
                     last_name: res.last_name, 
                     display_name: res.display_name, 
                     roles: res.roles,
+                    image_url: res.image_url,
                     _id: res._id, 
                 }
             }, "Succefully loggedin!")
@@ -97,22 +100,41 @@ export class AuthService{
         first_name: string,
         last_name: string,
         email: string,
-        roles: string[]
+        roles: string[],
+        image_url: string,
     }){
         return resFunction(async()=>{
-            const res = await this.authModel.findOneAndUpdate({
-                _id: id,
-            }, {
+            var image_url="";
+            if(path.trim() !== ""){
+                const { statusCode } = await cloudinaryInstance.deleteImage(data.image_url);
+                if(statusCode === 200){
+                    const { imageURL } = await cloudinaryInstance.uploadImage(path);
+                    image_url = imageURL; 
+                }
+            }
+            // console.log(image_url);
+            const newData:{
+                first_name: string;
+                last_name: string;
+                roles: string[];
+                email: string;
+                display_name: string;
+                image_url?: string;
+              } = {
                 first_name: data.first_name,
                 last_name: data.last_name,
                 roles: data.roles,
                 email: data.email,
                 display_name: data.first_name+" "+data.last_name,
-                image_url: path
-            }, {
+            }
+            if(image_url.trim() !== ""){
+                newData.image_url = image_url;
+            }
+            const res = await this.authModel.findOneAndUpdate({
+                _id: id,
+            },newData , {
                 new: true
             })
-
             return resMessage(res, "Successfully updated")
         })
     }

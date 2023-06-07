@@ -6,7 +6,8 @@ export class UpdateUserCommand{
             first_name: string,
             last_name: string,
             email: string,
-            roles: string[]
+            roles: string[],
+            image_url: string,
         }
     ){}
 }

@@ -83,9 +83,8 @@ export class AuthController{
       }))
     async updateUser(@Param("id") id: string, @Body() body: any, @UploadedFile() file: Express.Multer.File){
       //  console.log("\n", file, "\n", body);
-       const filePath = file.path || ""
-       const { imageURL } = await cloudinaryInstance.uploadImage(filePath);
-       return this.commandBus.execute(new UpdateUserCommand(id, imageURL ?? "/", body?.data));
+       const filePath = file?.path || ""
+       return this.commandBus.execute(new UpdateUserCommand(id, filePath ?? "", body?.data));
     }
 }
 
