@@ -31,3 +31,22 @@ export class RolesGuard implements CanActivate {
 
 import {SetMetadata} from '@nestjs/common';
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
+
+export class LoggedInUser{
+     constructor(
+      private readonly token: string,
+      private readonly jwtService: JwtService
+     ){}
+     findUser(){
+      const user = this.jwtService.verify(this.token?.slice(7,this.token?.length), { secret: "fagalsiefasldfkansodifansoif"})
+      if(!user){
+        return {
+          success: false,
+        }
+      }
+      return {
+        success: true,
+        data: user
+      }
+     }
+}

@@ -9,6 +9,7 @@ import { ContactMessage } from './contact/contact.module';
 import { AuthModule } from './auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { MulterModule } from '@nestjs/platform-express';
+import { ArticleModule } from './article/article.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { MulterModule } from '@nestjs/platform-express';
     AuthModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MulterModule.register(),
+    ArticleModule
   ],
   controllers: [AppController],
   providers: [AppService],
