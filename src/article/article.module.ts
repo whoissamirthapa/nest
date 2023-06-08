@@ -4,7 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Article, ArticleSchema } from "./article.schema";
 import { ArticleController } from "./article.controller";
 import { ArticleService } from "./article.service";
-import { AddArticleHandler } from "./handler/command-article.handler";
+import { AddArticleHandler, DeleteArticleHandler, DeleteArticlesHandler, UpdateArticleHandler } from "./handler/command-article.handler";
 import { RolesGuard } from "src/auth/middleware/roles.guard";
 import { JwtService } from "@nestjs/jwt";
 import { GetArticlesHandler } from "./handler/query-article.handler";
@@ -21,7 +21,10 @@ import { GetArticlesHandler } from "./handler/query-article.handler";
         JwtService,
         ArticleService,
         AddArticleHandler,
-        GetArticlesHandler
+        GetArticlesHandler,
+        UpdateArticleHandler,
+        DeleteArticleHandler,
+        DeleteArticlesHandler
     ]
 })
 export class ArticleModule{}

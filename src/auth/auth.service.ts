@@ -20,14 +20,14 @@ export class AuthService{
     async addAuth(data: authTypeReq){
         // console.log(data);
         return resFunction(async ()=>{
-            if(data.email.trim() === "") throw new Error("Email is required")
+            if(data.email.trim() === "") throw { devError: "Email is required", error: "Email is required!"}
             
-            if(data.password.trim() === "") throw new Error("Password is required")
+            if(data.password.trim() === "") throw { devError: "Password is required", error: "Password is required!"}
             
             const userExist = await this.authModel.findOne({
                 email: data.email
             })
-            if(userExist) throw new Error("User already exist!");
+            if(userExist) throw { devError: "User already exists", error: "User already exists!"}
 
             let password = await bycript.hash(data.password, 12);
             const res = await this.authModel.create({
@@ -41,7 +41,7 @@ export class AuthService{
             if(res){
                 return resMessage(res, "Successfully registered");
             }
-            throw new Error("Error while registering")
+            throw { devError: "Error while registering", error: "Something went wrong"}
         });
     }
     async loginAuth(data: loginAuth){
@@ -50,9 +50,7 @@ export class AuthService{
             const res = await this.authModel.findOne({
                 email: data.email
             })
-            if(!res){
-                throw new Error("User not found!")
-            }
+            if(!res) throw { devError: "Error while logging in user", error: "Something went wrong!"}
 
             const match = await bycript.compare(data.password, res.password);
             if(!match) throw new Error("Credentials do not match!");
@@ -85,6 +83,7 @@ export class AuthService{
     async getUsers (){
         return resFunction(async()=>{
             const res = await this.authModel.find().select("-password");
+            if(!res) throw { devError: "Error while getting users", error: "Something went wrong!"}
             return resMessage(res, "Successfully found users");
         });
     }
@@ -92,6 +91,7 @@ export class AuthService{
     async getProfile(id: string){
         return resFunction(async()=>{
             const res = await this.authModel.findById(id).select('-password');
+            if(!res) throw { devError: "Error while getting profile", error: "Something went wrong!"}
             return resMessage(res, "Successfully found user");
         })
     }
@@ -135,10 +135,12 @@ export class AuthService{
             },newData , {
                 new: true
             }).select('-password');
+
+            if(!res) throw { devError: "Error while updating user", error: "Something went wrong!"}
+
             return resMessage(res, "Successfully updated")
         })
     }
-    
 }
 
 
