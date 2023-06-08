@@ -84,14 +84,14 @@ export class AuthService{
 
     async getUsers (){
         return resFunction(async()=>{
-            const res = await this.authModel.find();
+            const res = await this.authModel.find().select("-password");
             return resMessage(res, "Successfully found users");
         });
     }
 
     async getProfile(id: string){
         return resFunction(async()=>{
-            const res = await this.authModel.findById(id);
+            const res = await this.authModel.findById(id).select('-password');
             return resMessage(res, "Successfully found user");
         })
     }
@@ -134,7 +134,7 @@ export class AuthService{
                 _id: id,
             },newData , {
                 new: true
-            })
+            }).select('-password');
             return resMessage(res, "Successfully updated")
         })
     }

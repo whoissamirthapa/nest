@@ -5,16 +5,12 @@ import { Auth, AuthSchema } from "./auth.schema";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { AddAuthHandler, GetAuthHandler, GetProfileHandler, LoginAuthHandler, UpdateAuthHandler } from "./handler/auth-handler";
-import { JwtModule } from "@nestjs/jwt";
+import { JwtModule, JwtService } from "@nestjs/jwt";
+import { ArticleModule } from "src/article/article.module";
 
 
 @Module({
     imports:[CqrsModule,
-        JwtModule.register({
-            secret: 'fagalsiefasldfkansodifansoif',
-            signOptions: { expiresIn: '10d' },
-          }),
-          
         MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema}])
     ],
     controllers: [AuthController],
@@ -24,7 +20,8 @@ import { JwtModule } from "@nestjs/jwt";
         LoginAuthHandler,
         GetAuthHandler,
         GetProfileHandler,
-        UpdateAuthHandler
+        UpdateAuthHandler,
+        JwtService
     ]
 })
 export class AuthModule{}

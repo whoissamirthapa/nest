@@ -15,9 +15,17 @@ export class ArticleService{
     async addArticle(data: any){
         return resFunction(async()=>{
             const res = await this.articleModel.create(data);
-            console.log(res)
             if(!res){
               throw "Something went wrong"
+            }
+            return resMessage(res, "Successfully created!");
+        })
+    }
+    async getArticles(){
+        return resFunction(async()=>{
+            const res = await this.articleModel.find();
+            if(!res){
+                throw "Something went wrong"
             }
             return resMessage(res, "Successfully created!");
         })

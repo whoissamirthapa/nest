@@ -5,6 +5,9 @@ import { Article, ArticleSchema } from "./article.schema";
 import { ArticleController } from "./article.controller";
 import { ArticleService } from "./article.service";
 import { AddArticleHandler } from "./handler/command-article.handler";
+import { RolesGuard } from "src/auth/middleware/roles.guard";
+import { JwtService } from "@nestjs/jwt";
+import { GetArticlesHandler } from "./handler/query-article.handler";
 
 
 @Module({
@@ -14,8 +17,11 @@ import { AddArticleHandler } from "./handler/command-article.handler";
     ],
     controllers:[ArticleController],
     providers: [
+        RolesGuard,
+        JwtService,
         ArticleService,
-        AddArticleHandler
+        AddArticleHandler,
+        GetArticlesHandler
     ]
 })
 export class ArticleModule{}

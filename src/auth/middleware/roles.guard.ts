@@ -8,22 +8,20 @@ export class RolesGuard implements CanActivate {
 
   canActivate(context: ExecutionContext): boolean {
     const roles = this.reflector.getAllAndOverride<string[]>('roles', [context.getHandler(), context.getClass()]);
-    // console.log(roles);
-    // if (!roles) {
-    //   return true; // If no roles are specified, allow access
-    // }
     
     //----------------------manual authorization-----------------------//
     const request = context.switchToHttp().getRequest();
-    const token= request.headers?.authorization;
+    const token= request?.headers?.authorization;
+    if(!token) return false;
     const user = this.jwtService.verify(token?.slice(7,token?.length), { secret: "fagalsiefasldfkansodifansoif"})
-    if(!user){
-        return false;
-    }
-    //----------------------!manual authorization!-----------------------//
 
+    if(!user) return false;
+    request.user = user;
+
+    //----------------------!manual authorization!-----------------------//
+    if(!roles) return true;
     // // Check if the user has the required role
-    const hasRole = roles.some(role => user.roles.includes(role));
+    const hasRole = roles?.some(role => user.roles.includes(role));
     return hasRole;
   }
 }
@@ -31,22 +29,3 @@ export class RolesGuard implements CanActivate {
 
 import {SetMetadata} from '@nestjs/common';
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
-
-export class LoggedInUser{
-     constructor(
-      private readonly token: string,
-      private readonly jwtService: JwtService
-     ){}
-     findUser(){
-      const user = this.jwtService.verify(this.token?.slice(7,this.token?.length), { secret: "fagalsiefasldfkansodifansoif"})
-      if(!user){
-        return {
-          success: false,
-        }
-      }
-      return {
-        success: true,
-        data: user
-      }
-     }
-}

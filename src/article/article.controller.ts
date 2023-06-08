@@ -1,8 +1,10 @@
-import { Body, Controller, Post, Req } from "@nestjs/common";
+import { Body, Controller, Post, Req, Get, UseGuards } from "@nestjs/common";
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
 import { AddArticleCommand } from "./commands/add-article.command";
 import { resErrMessage } from "src/utils/response";
-import { Request } from "express";
+import { AuthGuard } from "@nestjs/passport";
+import { RolesGuard } from "src/auth/middleware/roles.guard";
+import { GetArticlesQuery } from "./queries/get-article.query";
 
 
 
@@ -14,7 +16,8 @@ export class ArticleController {
     ){}
 
     @Post()
-    async addArticle(@Body() body: {title:string, description: string}, @Req() req: Request){
+    @UseGuards(RolesGuard)
+    addArticle(@Body() body: {title:string, description: string}, @Req() req: any): any{
         const token = req.headers.authorization?.slice(7,req.headers.authorization?.length);
         if(!token){
             return resErrMessage("User must be logged in");
@@ -25,13 +28,24 @@ export class ArticleController {
         if(body?.description !== undefined && body?.description?.trim() === ""){
             return resErrMessage("Description is required");
         }
+
+        if(!req.user){
+            return resErrMessage("Something went wrong");
+        }
         return this.commandBus.execute(new AddArticleCommand(
             { 
-                author: token, 
+                author: req?.user?._id, 
                 title: body?.title, 
                 description: 
                 body.description
             })
         );
     }
+    
+    @Get()
+    @UseGuards(RolesGuard)
+    getArticles(){
+        return this.queryBus.execute(new GetArticlesQuery());
+    }
+
 }
