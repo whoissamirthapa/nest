@@ -11,7 +11,6 @@ export class ToggleLikeHandler implements ICommandHandler<ToggleLikeCommand>{
         private readonly likeService: LikeService
     ){}
     async execute(command: ToggleLikeCommand): Promise<any> {
-        console.log(command?.article_id);
         return this.likeService.toggleLike(command?.article_id, {user_id: command?.data.user_id, reaction: command?.data?.react})
     }
 }

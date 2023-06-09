@@ -8,12 +8,20 @@ import { AddArticleHandler, DeleteArticleHandler, DeleteArticlesHandler, UpdateA
 import { RolesGuard } from "src/auth/middleware/roles.guard";
 import { JwtService } from "@nestjs/jwt";
 import { GetArticlesHandler } from "./handler/query-article.handler";
+import { Reaction, ReactionSchema } from "./like/like.schema";
+import { Comment, commentSchema } from "./comment/comment.schema";
 
 
 @Module({
     imports: [
         CqrsModule,
-        MongooseModule.forFeature([{name: Article.name, schema: ArticleSchema}])
+        MongooseModule.forFeature(
+            [
+                {name: Article.name, schema: ArticleSchema},
+                {name: Reaction.name, schema: ReactionSchema},
+                {name: Comment.name, schema: commentSchema}
+            ]
+        )
     ],
     controllers:[ArticleController],
     providers: [

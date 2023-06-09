@@ -17,7 +17,7 @@ export class LikeController{
     toggleLike(@Body() body: { article_id: string, react: string}, @Req() req: any){
         const userId = req.user
         if(!userId) return resErrMessage({ devError: "User most loggedin to react", error: "Something went wrong"});
-        return this.commandBus.execute(new ToggleLikeCommand(userId, { user_id: userId?._id, react:body?.react}));
+        return this.commandBus.execute(new ToggleLikeCommand(body?.article_id, { user_id: userId?._id, react:body?.react}));
     }
 
     @Get()
