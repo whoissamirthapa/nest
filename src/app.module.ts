@@ -11,6 +11,7 @@ import { PassportModule } from '@nestjs/passport';
 import { MulterModule } from '@nestjs/platform-express';
 import { ArticleModule } from './article/article.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { LikeModule } from './article/like/like.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     MulterModule.register(),
-    ArticleModule
+    ArticleModule,
+    LikeModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtService],

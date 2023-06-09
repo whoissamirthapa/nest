@@ -14,15 +14,11 @@ export class Article{
    @Prop({ required: true})
    description: string
 
-   @Prop({ type: SchemaTypes.ObjectId, ref: "Auth"})
-   reactions: {
-    likes: string[],
-    loves: string[],
-    cares: string[]
-   }
+   @Prop({type: SchemaTypes.ObjectId, ref: "Reaction"})
+   reactions: string
 
-   @Prop({ref: "Comment"})
-   comments: string[]
+   @Prop({type: SchemaTypes.ObjectId, ref: "Comment"})
+   comments: string
 }
 
 export const ArticleSchema = SchemaFactory.createForClass(Article)

@@ -11,7 +11,7 @@ import { ArticleModule } from "src/article/article.module";
 
 @Module({
     imports:[CqrsModule,
-        MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema}])
+        MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema}]),
     ],
     controllers: [AuthController],
     providers:[

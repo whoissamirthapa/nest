@@ -53,7 +53,7 @@ export class AuthService{
             if(!res) throw { devError: "Error while logging in user", error: "Something went wrong!"}
 
             const match = await bycript.compare(data.password, res.password);
-            if(!match) throw new Error("Credentials do not match!");
+            if(!match) throw { devError: "Error while logging in user password donot match", error: "Credential do not match!"}
             
             const token = this.jwtService.sign({
                 email: res.email, 
@@ -63,6 +63,8 @@ export class AuthService{
                 roles: res.roles,
                 image_url: res.image_url,
                 _id: res._id, 
+            }, {
+                secret: "hello"
             });
 
             return resMessage({
