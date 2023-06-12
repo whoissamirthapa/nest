@@ -29,11 +29,20 @@ export class ArticleService{
     }
     async getArticles(){
         return resFunction(async()=>{
-            const res = await this.articleModel.find().populate("reactions").populate("comments");
+            const res = await this.articleModel.find().populate("reactions").populate("comments").populate("author", "display_name email first_name last_name image_url roles");
+
             if(!res){
                 return resErrMessage({ devError: "Error while getting article", error: "Something went wrong!"})
             }
-            return resMessage(res, "Successfully created!");
+            const data = {}
+            res?.forEach((item)=>{
+                var authorId = item?.author["_id"]+item?.author['display_name'];
+                if(!data[authorId]){
+                    data[authorId] =[]
+                }
+                data[authorId]?.push(item);
+            })
+            return resMessage(data, "Successfully created!");
         })
     }
 
@@ -74,3 +83,57 @@ export class ArticleService{
         })
     }
 }
+
+
+
+
+
+// const res = await this.articleModel.aggregate([
+//     {
+//       $lookup: {
+//         from: 'auths', // Replace with the name of the author collection
+//         localField: 'author',
+//         foreignField: '_id',
+//         as: 'author',
+//       },
+//     },
+//     {
+//       $unwind: '$author',
+//     },
+//     {
+//       $lookup: {
+//         from: 'comments', // Replace with the name of the comments collection
+//         localField: '_id',
+//         foreignField: 'article_id',
+//         as: 'comments',
+//       },
+//     },
+//     {
+//       $lookup: {
+//         from: 'reactions', // Replace with the name of the likes collection
+//         localField: '_id',
+//         foreignField: 'article_id',
+//         as: 'reactions',
+//       },
+//     },
+//     {
+//         $unwind: '$comments',
+//       },
+//       {
+//         $unwind: '$reactions',
+//       },
+//     {
+//       $group: {
+//         _id: '$author', // Group by the author
+//         articles: {
+//           $push: {
+//             _id: '$_id',
+//             title: '$title',
+//             description: '$description',
+//             comments: '$comments',
+//             reactions: '$reactions',
+//           },
+//         },
+//       },
+//     },
+//   ]).exec()
