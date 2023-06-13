@@ -29,7 +29,15 @@ export class ArticleService{
     }
     async getArticles(){
         return resFunction(async()=>{
-            const res = await this.articleModel.find().populate("reactions").populate("comments").populate("author", "display_name email first_name last_name image_url roles");
+            const res = await this.articleModel.find().populate("reactions").populate({ path:"comments", populate: {
+                path: "comment",
+                populate: {
+                   path: "user_id",
+                   select: "-password"
+                }
+            },
+            options: { sort: { _id: -1 } }
+        }).populate("author", "display_name email first_name last_name image_url roles");
 
             if(!res){
                 return resErrMessage({ devError: "Error while getting article", error: "Something went wrong!"})
@@ -52,7 +60,13 @@ export class ArticleService{
                 _id: id,
             }, data, {
                 new: true
-            }).populate("reactions").populate("comments");
+            }).populate("reactions").populate({ path:"comments", populate: {
+                path: "comment",
+                populate: {
+                   path: "user_id",
+                   select: "-password"
+                }
+            }, options: { sort: { _id: -1 } }});
             if(!res) return resErrMessage({ devError: "Error while updating article", error: "Something went wrong!"})
             return resMessage(res, "Successfully updated");
         })

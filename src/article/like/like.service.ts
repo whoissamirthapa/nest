@@ -35,7 +35,13 @@ export class LikeService {
                     $set: { reactions: res?._id} 
                 }, {
                     new: true
-                }).populate("reactions").populate("comments");
+                }).populate("reactions").populate({ path:"comments", populate: {
+                    path: "comment",
+                    populate: {
+                       path: "user_id",
+                       select: "-password"
+                    }
+                }, options: { sort: { _id: -1 } }}).populate("author")
                 if(!resArticle) return resErrMessage({ devError: "Error in inserting like into article", error: "Something went wrong"});
                 return resMessage(resArticle, "Successfully Liked!");
             }
@@ -51,7 +57,13 @@ export class LikeService {
                     new: true
                 })
                 if(!res) resErrMessage({ devError: "Error while liking", error: "Something went wrong"});
-                const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate("reactions").populate("comments");
+                const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate("reactions").populate({ path:"comments", populate: {
+                    path: "comment",
+                    populate: {
+                       path: "user_id",
+                       select: "-password"
+                    }
+                }, options: { sort: { _id: -1 } }}).populate("author")
                 if(!resArticle) return resErrMessage({ devError: "Error in inserting like into existing article", error: "Something went wrong"});
                 return resMessage(resArticle, "Successfully Toggled!");
             }
@@ -72,7 +84,13 @@ export class LikeService {
                 new: true
             })
             if(!res) resErrMessage({ devError: "Error while liking", error: "Something went wrong"});
-            const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate("reactions").populate("comments");
+            const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate("reactions").populate({ path:"comments", populate: {
+                    path: "comment",
+                    populate: {
+                       path: "user_id",
+                       select: "-password"
+                    }
+                }, options: { sort: { _id: -1 } }}).populate("author")
            
             if(!resArticle) return resErrMessage({ devError: "Error in inserting like into existing article", error: "Something went wrong"});
             return resMessage(resArticle, "Successfully Toggled!");

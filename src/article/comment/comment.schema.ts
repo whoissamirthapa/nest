@@ -16,5 +16,5 @@ export class Comment{
     comment: { user_id: string; comment: string }[];
 }
 
-export const commentSchema = SchemaFactory.createForClass(Comment);
+export const commentSchema = SchemaFactory.createForClass(Comment).set('timestamps', true);
 

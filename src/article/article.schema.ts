@@ -22,7 +22,7 @@ export class Article extends Document{
 
 }
 
-export const ArticleSchema = SchemaFactory.createForClass(Article)
+export const ArticleSchema = SchemaFactory.createForClass(Article).set("timestamps", true)
 
 const deleteLikesAndComments = async function (next) {
    const postId = this._conditions._id;

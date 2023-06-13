@@ -36,14 +36,31 @@ export class CommentService{
                     _id: res?.article_id
                 }, {
                     $set: { comments: [res?._id]}
-                }, { new: true });
+                }, { new: true }).populate("reactions").populate({ path:"comments", populate: {
+                    path: "comment",
+                    populate: {
+                       path: "user_id",
+                       select: "-password"
+                    },
+                    options: { sort: { _id: -1 } }
+                }, }).populate("author");
                 if(!article) return resErrMessage({ devError: "Error in adding comment in article", error: "Something went wrong"});
-                return resMessage(res, "Successfully created!")
+                return resMessage(article, "Successfully created!")
             }
             articleExist.comment?.push({user_id, comment});
-            res = await articleExist.save();
+            res = await articleExist.save()
             if(!res) return resErrMessage({ devError: "Error in commenting", error: "Something went wrong"});
-            return resMessage(res, "Successfully added!");
+            const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate("reactions").populate({ path:"comments", populate: {
+                path: "comment",
+                populate: {
+                    path: "user_id",
+                    select: "-password"
+                },
+                options: { sort: { _id: -1 } }
+            }}).populate("author")
+           
+            if(!resArticle) return resErrMessage({ devError: "Error in inserting comment into existing article", error: "Something went wrong"});
+            return resMessage(resArticle, "Successfully added!");
         })
 
     }
