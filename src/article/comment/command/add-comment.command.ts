@@ -7,3 +7,11 @@ export class AddCommentCommand{
         public readonly comment: string,
     ){}
 }
+
+export class DeleteCommentCommand{
+    constructor(
+        public readonly id: string,
+        public readonly comment_id: string,
+        public readonly user: any,
+    ){}
+}

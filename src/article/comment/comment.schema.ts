@@ -13,7 +13,9 @@ export class Comment{
         user_id: { type: SchemaTypes.ObjectId, ref: 'Auth' },
         comment: { type: String },
     }])
-    comment: { user_id: string; comment: string }[];
+    comment: {
+        [x: string]: unknown; user_id: string; comment: string 
+}[];
 }
 
 export const commentSchema = SchemaFactory.createForClass(Comment).set('timestamps', true);

@@ -74,4 +74,39 @@ export class CommentService{
             return resMessage(res, "Successfully found!");
         })
     }
+
+    deleteComment(id:string, comment_id: string, user:any){
+        return resFunction(async()=>{
+            console.log(id);
+            const existComment = await this.commentModel.findOne({
+                _id: id,
+            })
+            if(!existComment) return resErrMessage({ devError: "Comment not found", error: "Something went wrong"});
+
+            // @ts-ignore
+            const comment = existComment.comment?.filter((item)=> item?.user_id === user?._id);
+            if(!comment) return resErrMessage({ devError: "user is not authorized to delete this comment", error: "Something went wrong"})
+            // @ts-ignore
+            const index = existComment.comment?.findIndex(item => item?._id?.toString() === comment_id);
+            if (index !== -1) {
+                existComment.comment?.splice(index, 1);
+            }
+            
+            const res = await existComment.save();
+            
+            console.log(res?.article_id);
+            if(!res) return resErrMessage({devError: "Error in finding comment", error: "something went wrong"});
+            const resArticle = await this.articleModel.findOne({
+                _id: res?.article_id
+            }).populate("reactions").populate({ path:"comments", populate: {
+                path: "comment",
+                populate: {
+                    path: "user_id",
+                    select: "-password"
+                },
+                options: { sort: { _id: -1 } }
+            }}).populate("author")
+            return resMessage(resArticle, "Successfully found!");
+        })
+    }
 }

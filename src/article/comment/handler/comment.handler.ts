@@ -1,7 +1,8 @@
 import { CommandHandler, ICommandHandler, IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { AddCommentCommand } from "../command/add-comment.command";
+import { AddCommentCommand, DeleteCommentCommand } from "../command/add-comment.command";
 import { CommentService } from "../comment.service";
 import { GetCommentQuery } from "../queries/get-comment.query";
+import { DeleteArticleCommand } from "src/article/commands/add-article.command";
 
 
 
@@ -22,5 +23,15 @@ export class GetCommentHandler implements IQueryHandler<GetCommentQuery>{
     ){}
     async execute(query: GetCommentQuery): Promise<any> {
         return this.commentService.getComment(query?.comment_id);
+    }
+}
+
+@CommandHandler(DeleteCommentCommand)
+export class DeleteCommentHandler implements IQueryHandler<DeleteCommentCommand>{
+    constructor(
+        private readonly commentService: CommentService
+    ){}
+    async execute(command: DeleteCommentCommand): Promise<any> {
+        return this.commentService.deleteComment(command?.id, command?.comment_id, command?.user);
     }
 }
