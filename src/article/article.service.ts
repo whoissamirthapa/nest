@@ -29,7 +29,29 @@ export class ArticleService{
     }
     async getArticles(){
         return resFunction(async()=>{
-            const res = await this.articleModel.find().populate("reactions").populate({ path:"comments", populate: {
+            const res = await this.articleModel.find().populate(
+                { 
+                    path:"reactions",
+                        populate: 
+                            [
+                                {
+                                path: 'love',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'care',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'like',
+                                select: '-password'
+                                
+                                }
+                            ] 
+                }
+        ).populate({ path:"comments", populate: {
                 path: "comment",
                 populate: {
                    path: "user_id",
@@ -60,7 +82,29 @@ export class ArticleService{
                 _id: id,
             }, data, {
                 new: true
-            }).populate("reactions").populate({ path:"comments", populate: {
+            }).populate(
+                { 
+                    path:"reactions",
+                        populate: 
+                            [
+                                {
+                                path: 'love',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'care',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'like',
+                                select: '-password'
+                                
+                                }
+                            ] 
+                }
+        ).populate({ path:"comments", populate: {
                 path: "comment",
                 populate: {
                    path: "user_id",

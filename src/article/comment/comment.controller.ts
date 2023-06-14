@@ -1,9 +1,9 @@
-import { UseGuards, Get, Param, Query, Delete } from '@nestjs/common';
+import { UseGuards, Get, Param, Query, Delete, Put, Body } from '@nestjs/common';
 import { Controller, Req, Post } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { Request } from 'express';
 import { RolesGuard } from 'src/auth/middleware/roles.guard';
-import { AddCommentCommand, DeleteCommentCommand } from './command/add-comment.command';
+import { AddCommentCommand, DeleteCommentCommand, UpdateCommentCommand } from './command/add-comment.command';
 import { resErrMessage } from 'src/utils/response';
 import { GetCommentQuery } from './queries/get-comment.query';
 
@@ -36,5 +36,13 @@ export class CommentController{
         console.log(comment_id);
         const user = req.user as any;
         return this.commandBus.execute(new DeleteCommentCommand(param, comment_id, user));
+    }
+
+    @Put(":id")
+    @UseGuards(RolesGuard)
+    updateComment(@Param("id") param: string, @Body() body: any,  @Req() req: any | Request){
+        console.log(body);
+        const user = req.user as any;
+        return this.commandBus.execute(new UpdateCommentCommand(param, body?.comment_id, body?.comment, user));
     }
 }

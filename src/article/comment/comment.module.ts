@@ -7,7 +7,7 @@ import { CommentController } from './comment.controller';
 import { CommentService } from './comment.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { RolesGuard } from 'src/auth/middleware/roles.guard';
-import { AddCommentHandler, DeleteCommentHandler, GetCommentHandler } from './handler/comment.handler';
+import { AddCommentHandler, DeleteCommentHandler, GetCommentHandler, UpdateCommentHandler } from './handler/comment.handler';
 
 @Module({
     imports: [
@@ -27,6 +27,7 @@ import { AddCommentHandler, DeleteCommentHandler, GetCommentHandler } from './ha
         AddCommentHandler,
         GetCommentHandler,
         DeleteCommentHandler,
+        UpdateCommentHandler
     ],
 })
 export class CommentModule{}

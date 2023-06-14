@@ -35,7 +35,29 @@ export class LikeService {
                     $set: { reactions: res?._id} 
                 }, {
                     new: true
-                }).populate("reactions").populate({ path:"comments", populate: {
+                }).populate(
+                    { 
+                        path:"reactions",
+                            populate: 
+                                [
+                                    {
+                                    path: 'love',
+                                    select: '-password'
+                                    
+                                    },
+                                    {
+                                    path: 'care',
+                                    select: '-password'
+                                    
+                                    },
+                                    {
+                                    path: 'like',
+                                    select: '-password'
+                                    
+                                    }
+                                ] 
+                    }
+            ).populate({ path:"comments", populate: {
                     path: "comment",
                     populate: {
                        path: "user_id",
@@ -57,7 +79,29 @@ export class LikeService {
                     new: true
                 })
                 if(!res) resErrMessage({ devError: "Error while liking", error: "Something went wrong"});
-                const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate("reactions").populate({ path:"comments", populate: {
+                const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate(
+                    { 
+                        path:"reactions",
+                            populate: 
+                                [
+                                    {
+                                    path: 'love',
+                                    select: '-password'
+                                    
+                                    },
+                                    {
+                                    path: 'care',
+                                    select: '-password'
+                                    
+                                    },
+                                    {
+                                    path: 'like',
+                                    select: '-password'
+                                    
+                                    }
+                                ] 
+                    }
+            ).populate({ path:"comments", populate: {
                     path: "comment",
                     populate: {
                        path: "user_id",
@@ -84,7 +128,29 @@ export class LikeService {
                 new: true
             })
             if(!res) resErrMessage({ devError: "Error while liking", error: "Something went wrong"});
-            const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate("reactions").populate({ path:"comments", populate: {
+            const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate(
+                { 
+                    path:"reactions",
+                        populate: 
+                            [
+                                {
+                                path: 'love',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'care',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'like',
+                                select: '-password'
+                                
+                                }
+                            ] 
+                }
+        ).populate({ path:"comments", populate: {
                     path: "comment",
                     populate: {
                        path: "user_id",

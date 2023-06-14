@@ -15,3 +15,14 @@ export class DeleteCommentCommand{
         public readonly user: any,
     ){}
 }
+
+
+export class UpdateCommentCommand{
+    constructor(
+        public readonly id: string,
+        public readonly comment_id: string,
+        public readonly comment: string,
+        public readonly user: any,
+    ){}
+}
+

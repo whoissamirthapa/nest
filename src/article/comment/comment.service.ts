@@ -36,7 +36,29 @@ export class CommentService{
                     _id: res?.article_id
                 }, {
                     $set: { comments: [res?._id]}
-                }, { new: true }).populate("reactions").populate({ path:"comments", populate: {
+                }, { new: true }).populate(
+                    { 
+                        path:"reactions",
+                            populate: 
+                                [
+                                    {
+                                    path: 'love',
+                                    select: '-password'
+                                    
+                                    },
+                                    {
+                                    path: 'care',
+                                    select: '-password'
+                                    
+                                    },
+                                    {
+                                    path: 'like',
+                                    select: '-password'
+                                    
+                                    }
+                                ] 
+                    }
+            ).populate({ path:"comments", populate: {
                     path: "comment",
                     populate: {
                        path: "user_id",
@@ -50,7 +72,29 @@ export class CommentService{
             articleExist.comment?.push({user_id, comment});
             res = await articleExist.save()
             if(!res) return resErrMessage({ devError: "Error in commenting", error: "Something went wrong"});
-            const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate("reactions").populate({ path:"comments", populate: {
+            const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate(
+                { 
+                    path:"reactions",
+                        populate: 
+                            [
+                                {
+                                path: 'love',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'care',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'like',
+                                select: '-password'
+                                
+                                }
+                            ] 
+                }
+        ).populate({ path:"comments", populate: {
                 path: "comment",
                 populate: {
                     path: "user_id",
@@ -77,7 +121,7 @@ export class CommentService{
 
     deleteComment(id:string, comment_id: string, user:any){
         return resFunction(async()=>{
-            console.log(id);
+            // console.log(id);
             const existComment = await this.commentModel.findOne({
                 _id: id,
             })
@@ -98,7 +142,85 @@ export class CommentService{
             if(!res) return resErrMessage({devError: "Error in finding comment", error: "something went wrong"});
             const resArticle = await this.articleModel.findOne({
                 _id: res?.article_id
-            }).populate("reactions").populate({ path:"comments", populate: {
+            }).populate(
+                { 
+                    path:"reactions",
+                        populate: 
+                            [
+                                {
+                                path: 'love',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'care',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'like',
+                                select: '-password'
+                                
+                                }
+                            ] 
+                }
+        ).populate({ path:"comments", populate: {
+                path: "comment",
+                populate: {
+                    path: "user_id",
+                    select: "-password"
+                },
+                options: { sort: { _id: -1 } }
+            }}).populate("author")
+            return resMessage(resArticle, "Successfully found!");
+        })
+    }
+    updateComment(id:string, comment_id: string, comment: string, user:any){
+        return resFunction(async()=>{
+            console.log(id);
+            const existComment = await this.commentModel.findOne({
+                _id: id,
+            })
+            if(!existComment) return resErrMessage({ devError: "Comment not found", error: "Something went wrong"});
+
+            // @ts-ignore
+            const excomment = existComment.comment?.filter((item)=> item?.user_id === user?._id);
+            if(!excomment) return resErrMessage({ devError: "user is not authorized to update this comment", error: "Something went wrong"})
+            // @ts-ignore
+            const index = existComment.comment?.findIndex(item => item?._id?.toString() === comment_id);
+            if (index !== -1) {
+                existComment.comment?.splice(index, 1, {user_id: user?._id, comment: comment, _id: comment_id});
+            }
+            
+            const res = await existComment.save();
+            
+            console.log(res?.article_id);
+            if(!res) return resErrMessage({devError: "Error in finding comment", error: "something went wrong"});
+            const resArticle = await this.articleModel.findOne({
+                _id: res?.article_id
+            }).populate(
+                { 
+                    path:"reactions",
+                        populate: 
+                            [
+                                {
+                                path: 'love',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'care',
+                                select: '-password'
+                                
+                                },
+                                {
+                                path: 'like',
+                                select: '-password'
+                                
+                                }
+                            ] 
+                }
+        ).populate({ path:"comments", populate: {
                 path: "comment",
                 populate: {
                     path: "user_id",
