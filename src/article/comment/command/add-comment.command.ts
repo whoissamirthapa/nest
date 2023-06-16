@@ -22,6 +22,8 @@ export class UpdateCommentCommand{
     constructor(
         public readonly id: string,
         public readonly comment_id: string,
+        public readonly isReply: boolean,
+        public readonly parent_id: string,
         public readonly comment: string,
         public readonly user: any,
     ){}

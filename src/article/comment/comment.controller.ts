@@ -43,6 +43,6 @@ export class CommentController{
     updateComment(@Param("id") param: string, @Body() body: any,  @Req() req: any | Request){
         console.log(body);
         const user = req.user as any;
-        return this.commandBus.execute(new UpdateCommentCommand(param, body?.comment_id, body?.comment, user));
+        return this.commandBus.execute(new UpdateCommentCommand(param, body?.comment_id, body?.isReply, body?.parent_id, body?.comment, user));
     }
 }

@@ -119,9 +119,9 @@ export class CommentService{
 
     getComment(id:string){
         return resFunction(async()=>{
-            console.log(id);
+            // console.log(id);
             const res = await this.commentModel.findById(id);
-            console.log(res);
+            // console.log(res);
             if(!res) return resErrMessage({devError: "Error in finding comment", error: "something went wrong"});
             return resMessage(res, "Successfully found!");
         })
@@ -138,17 +138,32 @@ export class CommentService{
             // @ts-ignore
             const comment = existComment.comment?.filter((item)=> item?.user_id === user?._id);
             if(!comment) return resErrMessage({ devError: "user is not authorized to delete this comment", error: "Something went wrong"})
+            // const deletedRes = await this.commentModel.deleteMany({ parent_id: comment_id});
             // @ts-ignore
             const index = existComment.comment?.findIndex(item => item?._id?.toString() === comment_id);
-            console.log(index);
+            // console.log(index);
             if (index !== -1) {
                 existComment.comment?.splice(index, 1);
             }
             
+            const ids = existComment?.comment?.filter((i)=> i?.parent_id?.toString() === comment_id)?.map((i)=> i?._id);
+            for( var ix of ids){
+                const indexReply = existComment.comment?.findIndex(item => item?._id?.toString() === ix?.toString());
+                if (indexReply !== -1) {
+
+                    existComment.comment?.splice(indexReply, 1);
+                }
+            }
+
             const res = await existComment.save();
             
             // console.log(res);
             if(!res) return resErrMessage({devError: "Error in finding comment", error: "something went wrong"});
+            // console.log(existComment?.comment);
+            // const ids = existComment?.comment?.filter((i)=> i?.parent_id?.toString() === comment_id)?.map((i)=> i?._id);
+            // console.log(ids, idsM, comment_id);
+            // console.log(ids, comment_id);
+            // console.log(deletedRes);
             const resArticle = await this.articleModel.findOne({
                 _id: res?.article_id
             }).populate(
@@ -185,7 +200,7 @@ export class CommentService{
             return resMessage(resArticle, "Successfully deleted!");
         })
     }
-    updateComment(id:string, comment_id: string, comment: string, user:any){
+    updateComment(id:string, comment_id: string, isReply: boolean, parent_id:string, comment: string, user:any){
         return resFunction(async()=>{
             console.log(id);
             const existComment = await this.commentModel.findOne({
@@ -200,9 +215,11 @@ export class CommentService{
             const index = existComment.comment?.findIndex(item => item?._id?.toString() === comment_id);
             if (index !== -1) {
                 existComment.comment?.splice(index, 1, {
-                    user_id: user?._id, comment: comment, _id: comment_id,
-                    isReply: false,
-                    parent_id: ''
+                    user_id: user?._id, 
+                    comment: comment,
+                     _id: comment_id,
+                    isReply: isReply,
+                    parent_id: parent_id
                 });
             }
             

@@ -42,6 +42,6 @@ export class UpdateCommentHandler implements IQueryHandler<UpdateCommentCommand>
         private readonly commentService: CommentService
     ){}
     async execute(command: UpdateCommentCommand): Promise<any> {
-        return this.commentService.updateComment(command?.id, command?.comment_id, command?.comment, command?.user);
+        return this.commentService.updateComment(command?.id, command?.comment_id, command?.isReply, command?.parent_id, command?.comment, command?.user);
     }
 }
