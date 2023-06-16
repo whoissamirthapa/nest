@@ -12,10 +12,16 @@ export class Comment{
     @Prop([{
         user_id: { type: SchemaTypes.ObjectId, ref: 'Auth' },
         comment: { type: String },
+        isReply: { type: Boolean },
+        parent_id: { type: SchemaTypes.ObjectId, ref: "Comment" }
     }])
     comment: {
-        [x: string]: unknown; user_id: string; comment: string 
-}[];
+        [x: string]: unknown; 
+        user_id: string; 
+        comment: string; 
+        isReply: boolean;
+        parent_id: string;
+    }[];
 }
 
 export const commentSchema = SchemaFactory.createForClass(Comment).set('timestamps', true);

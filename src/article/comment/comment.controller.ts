@@ -21,7 +21,7 @@ export class CommentController{
         const { body }  = req;
         const user = req.user;
         if(!user) return resErrMessage({ devError: "User is not loggedin", error: "Something went wrong"});
-        return this.commandBus.execute(new AddCommentCommand(body?.article_id, user?._id, body?.comment));
+        return this.commandBus.execute(new AddCommentCommand(body?.article_id, user?._id, body?.comment, body?.parent_id));
     }
 
     @Get(":id")

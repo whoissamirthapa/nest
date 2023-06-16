@@ -5,6 +5,7 @@ export class AddCommentCommand{
         public readonly article_id: string,
         public readonly user_id: string,
         public readonly comment: string,
+        public readonly parent_id: string,
     ){}
 }
 

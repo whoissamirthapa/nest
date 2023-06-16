@@ -15,7 +15,8 @@ export class CommentService{
         private readonly articleModel: Model<ArticleDocument>
     ){}
 
-    addComment(article_id: string, user_id:string, comment: string){
+    addComment(article_id: string, user_id:string, comment: string, parent_id: any){
+        // console.log(parent_id, article_id, comment);
         return resFunction(async()=>{
             const articleExist = await this.commentModel.findOne({
                 article_id: article_id,
@@ -28,7 +29,10 @@ export class CommentService{
                     comment: [{
                         user_id,
                         comment,
-                    }]
+                        parent_id: parent_id || null,
+                        isReply: parent_id ? true : false,
+                    }],
+                    
                 })
                 res = await r.save();
                 if(!res) return resErrMessage({ devError: "Error in commenting", error: "Something went wrong"});
@@ -69,7 +73,11 @@ export class CommentService{
                 if(!article) return resErrMessage({ devError: "Error in adding comment in article", error: "Something went wrong"});
                 return resMessage(article, "Successfully created!")
             }
-            articleExist.comment?.push({user_id, comment});
+            articleExist.comment?.push({
+                user_id, comment,
+                isReply: parent_id ? true: false,
+                parent_id: parent_id || null
+            });
             res = await articleExist.save()
             if(!res) return resErrMessage({ devError: "Error in commenting", error: "Something went wrong"});
             const resArticle = await this.articleModel.findOne({_id: res?.article_id}).populate(
@@ -132,13 +140,14 @@ export class CommentService{
             if(!comment) return resErrMessage({ devError: "user is not authorized to delete this comment", error: "Something went wrong"})
             // @ts-ignore
             const index = existComment.comment?.findIndex(item => item?._id?.toString() === comment_id);
+            console.log(index);
             if (index !== -1) {
                 existComment.comment?.splice(index, 1);
             }
             
             const res = await existComment.save();
             
-            console.log(res?.article_id);
+            // console.log(res);
             if(!res) return resErrMessage({devError: "Error in finding comment", error: "something went wrong"});
             const resArticle = await this.articleModel.findOne({
                 _id: res?.article_id
@@ -164,7 +173,7 @@ export class CommentService{
                                 }
                             ] 
                 }
-        ).populate({ path:"comments", populate: {
+            ).populate({ path:"comments", populate: {
                 path: "comment",
                 populate: {
                     path: "user_id",
@@ -172,7 +181,8 @@ export class CommentService{
                 },
                 options: { sort: { _id: -1 } }
             }}).populate("author")
-            return resMessage(resArticle, "Successfully found!");
+            if(!resArticle) return resErrMessage({ devError: "Error in getting article after deleting comment", error: "Something went wrong"})
+            return resMessage(resArticle, "Successfully deleted!");
         })
     }
     updateComment(id:string, comment_id: string, comment: string, user:any){
@@ -189,7 +199,11 @@ export class CommentService{
             // @ts-ignore
             const index = existComment.comment?.findIndex(item => item?._id?.toString() === comment_id);
             if (index !== -1) {
-                existComment.comment?.splice(index, 1, {user_id: user?._id, comment: comment, _id: comment_id});
+                existComment.comment?.splice(index, 1, {
+                    user_id: user?._id, comment: comment, _id: comment_id,
+                    isReply: false,
+                    parent_id: ''
+                });
             }
             
             const res = await existComment.save();
@@ -231,4 +245,6 @@ export class CommentService{
             return resMessage(resArticle, "Successfully found!");
         })
     }
+
+
 }

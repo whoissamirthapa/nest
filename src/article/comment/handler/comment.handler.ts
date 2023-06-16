@@ -12,7 +12,7 @@ export class AddCommentHandler implements ICommandHandler<AddCommentCommand>{
         private readonly commentService: CommentService
     ){}
     async execute(command: AddCommentCommand): Promise<any> {
-        return this.commentService.addComment(command?.article_id, command?.user_id, command?.comment);
+        return this.commentService.addComment(command?.article_id, command?.user_id, command?.comment, command?.parent_id);
     }
 }
 
