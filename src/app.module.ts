@@ -22,7 +22,7 @@ import { CommentModule } from './article/comment/comment.module';
     ContactMessage, 
     AuthModule,
     JwtModule.register({
-      secret: 'fagalsiefasldfkansodifansoif',
+      secret: 'hello',
       signOptions: { expiresIn: '10d' },
     }),
     PassportModule.register({ defaultStrategy: 'jwt' }),

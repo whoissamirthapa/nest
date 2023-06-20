@@ -37,7 +37,9 @@ export class AuthController{
 
     @Post('login')
     async login(@Request() req: any) {
-        return this.commandBus.execute(new LoginAuthCommand( req.body))
+        const res =  await this.commandBus.execute(new LoginAuthCommand( req.body))
+        // console.log(res)
+        return res;
     }
 
     @Get()
@@ -84,6 +86,7 @@ export class AuthController{
     async updateUser(@Param("id") id: string, @Body() body: any, @UploadedFile() file: Express.Multer.File){
       //  console.log("\n", file, "\n", body);
        const filePath = file?.path || ""
+      //  console.log('file path',filePath);
        return this.commandBus.execute(new UpdateUserCommand(id, filePath ?? "", body?.data));
     }
 }

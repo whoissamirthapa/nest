@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { Model } from 'mongoose';
 import { Auth, AuthDocument } from './auth.schema';
 import { authTypeReq, loginAuth } from 'enum/auth';
-import { resFunction, resMessage } from 'src/utils/response';
+import { resErrMessage, resFunction, resMessage } from 'src/utils/response';
 import * as bycript from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt'
 import { cloudinaryInstance } from './middleware/cloudinary';
@@ -46,30 +46,17 @@ export class AuthService{
     }
     async loginAuth(data: loginAuth){
         // console.log(data);
-        return resFunction(async ()=>{
-            const res = await this.authModel.findOne({
-                email: data.email
-            })
-            if(!res) throw { devError: "Error while logging in user", error: "Something went wrong!"}
-
-            const match = await bycript.compare(data.password, res.password);
-            if(!match) throw { devError: "Error while logging in user password donot match", error: "Credential do not match!"}
-            
-            const token = this.jwtService.sign({
-                email: res.email, 
-                first_name: res.first_name, 
-                last_name: res.last_name, 
-                display_name: res.display_name, 
-                roles: res.roles,
-                image_url: res.image_url,
-                _id: res._id, 
-            }, {
-                secret: "hello"
-            });
-
-            return resMessage({
-                token,
-                data: {
+        try {
+            const ress = await resFunction(async ()=>{
+                const res = await this.authModel.findOne({
+                    email: data.email
+                })
+                if(!res) throw { devError: "Error while logging in user", error: "Something went wrong!"}
+    
+                const match = await bycript.compare(data.password, res.password);
+                if(!match) throw { devError: "Error while logging in user password donot match", error: "Credential do not match!"}
+                
+                const token = this.jwtService.sign({
                     email: res.email, 
                     first_name: res.first_name, 
                     last_name: res.last_name, 
@@ -77,9 +64,29 @@ export class AuthService{
                     roles: res.roles,
                     image_url: res.image_url,
                     _id: res._id, 
-                }
-            }, "Succefully loggedin!")
-        });
+                }, {
+                    secret: "hello"
+                });
+    
+                return resMessage({
+                    token,
+                    data: {
+                        email: res.email, 
+                        first_name: res.first_name, 
+                        last_name: res.last_name, 
+                        display_name: res.display_name, 
+                        roles: res.roles,
+                        image_url: res.image_url,
+                        _id: res._id, 
+                    }
+                }, "Succefully loggedin!")
+            })
+            // console.log("resss",ress)
+            return ress;
+        } catch (error) {
+            // console.log("catch", error);
+            return resErrMessage(error);
+        }
     }
 
     async getUsers (){
@@ -108,10 +115,17 @@ export class AuthService{
         return resFunction(async()=>{
             var image_url="";
             if(path.trim() !== ""){
-                const { statusCode } = await cloudinaryInstance.deleteImage(data.image_url);
-                if(statusCode === 200){
+                var resCloudinary = {
+                    statusCode: 200
+                };
+                if(data?.image_url !== '/'){
+                    resCloudinary = await cloudinaryInstance.deleteImage(data.image_url);
+                }
+                // console.log(resCloudinary)
+                if(resCloudinary?.statusCode === 200){
                     const { imageURL } = await cloudinaryInstance.uploadImage(path);
                     image_url = imageURL; 
+                    // console.log(imageURL);
                 }
             }
             // console.log(image_url);
@@ -132,6 +146,7 @@ export class AuthService{
             if(image_url.trim() !== ""){
                 newData.image_url = image_url;
             }
+            console.log('new data',newData);
             const res = await this.authModel.findOneAndUpdate({
                 _id: id,
             },newData , {
