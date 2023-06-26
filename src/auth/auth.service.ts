@@ -83,6 +83,8 @@ export class AuthService {
           display_name: res.display_name,
           roles: res.roles,
           image_url: res.image_url,
+          following: res.following,
+          follower: res.follower,
           _id: res._id,
         },
         {
@@ -100,6 +102,8 @@ export class AuthService {
             display_name: res.display_name,
             roles: res.roles,
             image_url: res.image_url,
+            following: res.following,
+            follower: res.follower,
             _id: res._id,
           },
         },
@@ -123,6 +127,7 @@ export class AuthService {
   async getProfile(id: string) {
     return resFunction(async () => {
       const res = await this.authModel.findById(id).select('-password');
+      console.log(res);
       if (!res)
         throw {
           devError: 'Error while getting profile',
