@@ -1,4 +1,3 @@
-import { loginAuth } from './../enum/auth/index';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -16,10 +15,10 @@ import { CommentModule } from './article/comment/comment.module';
 
 @Module({
   imports: [
-    TodoModule, 
-    TodoModuleWithoutCQRS, 
-    DatabaseModule, 
-    ContactMessage, 
+    TodoModule,
+    TodoModuleWithoutCQRS,
+    DatabaseModule,
+    ContactMessage,
     AuthModule,
     JwtModule.register({
       secret: 'hello',
@@ -29,7 +28,7 @@ import { CommentModule } from './article/comment/comment.module';
     MulterModule.register(),
     ArticleModule,
     LikeModule,
-    CommentModule
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtService],
