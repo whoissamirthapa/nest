@@ -12,6 +12,7 @@ import { ArticleModule } from './article/article.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { LikeModule } from './article/like/like.module';
 import { CommentModule } from './article/comment/comment.module';
+import { ChatGateway } from './config/socket-config';
 
 @Module({
   imports: [
@@ -31,6 +32,6 @@ import { CommentModule } from './article/comment/comment.module';
     CommentModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService],
+  providers: [AppService, JwtService, ChatGateway],
 })
 export class AppModule {}
